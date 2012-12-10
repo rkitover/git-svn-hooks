@@ -5,7 +5,8 @@ This is a shell function for Bourne compatible shells (bash, zsh, ksh, ash,
 etc.) that allows you to run hooks for git-svn commands (including through
 aliases.)
 
-* Installation
+Installation
+------------
 
     mkdir ~/.sh
     mv git-svn.sh ~/.sh
@@ -16,7 +17,8 @@ In your shell startup file (e.g. ~/.bashrc) add the following:
         source $f
     done
 
-* Hooks
+Hooks
+-----
 
 You can make pre and post hooks, they go into .git/hooks/ in your project
 directory. For example:
@@ -29,7 +31,8 @@ return 0 on success and some other value on failure.
 
 A pre hook that returns failure will stop the git-svn command from executing.
 
-* Usage
+Usage
+-----
 
 Use git and git-svn commands as usual, including aliases you have for them,
 the git-svn hooks will run.
