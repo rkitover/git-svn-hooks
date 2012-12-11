@@ -38,12 +38,23 @@ git() {
 
     unset _param_1
 
-    if [ -n "$_expanded" ]; then
-        shift;
-        eval "git $_expanded \"\$@\""
-        unset _expanded _root
+    # check for !shell-command aliases
+    case "$_expanded" in
+    \!*)
+        _expanded=$(echo "$_expanded" | sed -e 's/.//')
+        shift
+        eval "$_expanded \"\$@\""
         return $?
-    fi
+        ;;
+    *)
+        if [ -n "$_expanded" ]; then
+            shift
+            eval "git $_expanded \"\$@\""
+            unset _expanded _root
+            return $?
+        fi
+        ;;
+    esac
 
     unset _expanded
 
