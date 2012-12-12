@@ -1,0 +1,14 @@
+#!/bin/sh
+
+update_server() {
+    # for example:
+    #
+    # ssh -tq dev@dev 'cd the_project; svn up'
+    #
+    # or
+    #
+    # ssh -tq dev 'sudo sh -c "cd /project; svn up"'
+}
+
+update_server
+git stash pop # stashed in pre-svn-dcommit hook

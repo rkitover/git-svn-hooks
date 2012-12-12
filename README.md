@@ -31,6 +31,15 @@ return 0 on success and some other value on failure.
 
 A pre hook that returns failure will stop the git-svn command from executing.
 
+Sample Hooks
+------------
+
+There are some ready to use sample hooks in the `sample_hooks` directory, they
+do a `git stash` before rebase, and do a stash and rebase before dcommit.
+
+If you want to update a remote server on dcommit, edit the `update_server`
+function in `post-svn-dcommit`.
+
 Usage
 -----
 

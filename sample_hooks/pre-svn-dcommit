@@ -1,0 +1,10 @@
+#!/bin/sh
+
+git stash
+
+if ! git svn rebase; then
+    echo "WARNING: remember to 'git stash pop' after resolving conflicts"
+    exit 1;
+fi
+
+exit 0
