@@ -9,10 +9,10 @@
 # Author: rkitover: Rafael Kitover (rkitover@cpan.org)
 
 git() {
-    _root=$(command git rev-parse --show-toplevel);
+    _root=$(command git rev-parse --show-toplevel 2>/dev/null);
 
     # check that this is a git-svn repo
-    [ -d "$_root/.git/svn"  ] && [ x != x"$(ls -A "$_root/.git/svn/")" ] && _git_svn=1
+    [ -n "$_root" ] && [ -d "$_root/.git/svn"  ] && [ x != x"$(ls -A "$_root/.git/svn/")" ] && _git_svn=1
 
     # otherwise just pass through to git
     if [ -z "$_git_svn" ]; then
