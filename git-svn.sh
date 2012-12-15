@@ -44,6 +44,7 @@ git() {
         _expanded=$(echo "$_expanded" | sed -e 's/.//')
         shift
         eval "$_expanded \"\$@\""
+        unset _expanded _root
         return $?
         ;;
     *)
