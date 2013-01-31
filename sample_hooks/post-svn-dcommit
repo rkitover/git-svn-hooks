@@ -3,11 +3,11 @@
 update_server() {
     # for example:
     #
-    # ssh -tq dev@dev 'cd the_project; svn up'
+    # ssh -tq dev@dev 'cd the_project; svn up --force'
     #
     # or
     #
-    # ssh -tq dev 'sudo sh -c "cd /project; svn up"'
+    # ssh -tq dev 'sudo sh -c "cd /project; svn up --force"'
 }
 
 update_server
