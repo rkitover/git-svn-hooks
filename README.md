@@ -49,6 +49,8 @@ the git-svn hooks will run.
 Configuration
 -------------
 
-You can set the `GIT_SVN_USERNAME` environment variable to issue an svn command
-to log in as that username for all `git svn` commands, including the ones in
-the sample hooks.
+You can set the `GIT_SVN_USERNAME` environment variable to issue a dummy svn
+command to log in as that username for all `git svn` commands.
+
+This is helpful if you frequently change svn usernames, since svn will use the
+last one you logged in as.

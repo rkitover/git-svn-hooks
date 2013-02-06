@@ -2,10 +2,6 @@
 
 git stash
 
-if [ -n "$GIT_SVN_USERNAME" ]; then
-    svn log -rHEAD --username $GIT_SVN_USERNAME $(git config svn-remote.svn.url) | head -10 >/dev/null 2>&1
-fi
-
 if ! git svn rebase; then
     echo "WARNING: remember to 'git stash pop' after resolving conflicts"
     exit 1;
