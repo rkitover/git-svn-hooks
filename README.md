@@ -45,3 +45,10 @@ Usage
 
 Use git and git-svn commands as usual, including aliases you have for them,
 the git-svn hooks will run.
+
+Configuration
+-------------
+
+You can set the `GIT_SVN_USERNAME` environment variable to issue an svn command
+to log in as that username for all `git svn` commands, including the ones in
+the sample hooks.
