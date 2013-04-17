@@ -1,6 +1,6 @@
 # git-svn-hooks -- a helper for git-svn that allows hooks
 #
-# Version: 0.0.7
+# Version: 0.0.8
 #
 # Works with all Bourne compatible shells.
 #
