@@ -77,7 +77,7 @@ git() {
 
     # call git-svn
     if [ -n "$GIT_SVN_USERNAME" ]; then
-        yes yes | svn log -rHEAD --username $GIT_SVN_USERNAME $(cd $(command git rev-parse --show-toplevel); command git svn info --url) >/dev/null
+        yes yes | svn log -rHEAD --username $GIT_SVN_USERNAME $(cd $(command git rev-parse --show-toplevel); command git config svn-remote.svn.url) >/dev/null
     fi
     command git svn "$@"
     _exit_val=$?
