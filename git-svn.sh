@@ -67,32 +67,46 @@ git() {
         shift;
     fi
 
+    if [ -n "$GIT_SVN_USERNAME" ]; then
+        echo yes | svn log -rHEAD --username $GIT_SVN_USERNAME $(cd $(command git rev-parse --show-toplevel); command git config svn-remote.svn.url) >/dev/null
+        _svn_username="$GIT_SVN_USERNAME"
+        unset GIT_SVN_USERNAME
+    fi
+
     # Pre hooks
     if [ -x "$_root/.git/hooks/pre-svn-$1" ]; then
         if ! "$_root"/.git/hooks/pre-svn-$1; then
+            if [ -n "$_svn_username" ]; then
+                export GIT_SVN_USERNAME="$_svn_username"
+                unset _svn_username
+            fi
             unset _root
             return $?
         fi
     fi
 
     # call git-svn
-    if [ -n "$GIT_SVN_USERNAME" ]; then
-        yes yes | svn log -rHEAD --username $GIT_SVN_USERNAME $(cd $(command git rev-parse --show-toplevel); command git config svn-remote.svn.url) >/dev/null
-    fi
     command git svn "$@"
     _exit_val=$?
 
     # Post hooks
     if [ -x "$_root/.git/hooks/post-svn-$1" ]; then
         if ! "$_root"/.git/hooks/post-svn-$1; then
+            if [ -n "$_svn_username" ]; then
+                export GIT_SVN_USERNAME="$_svn_username"
+                unset _svn_username
+            fi
             unset _root _exit_val
             return $?
         fi
     fi
 
+    if [ -n "$_svn_username" ]; then
+        export GIT_SVN_USERNAME="$_svn_username"
+        unset _svn_username
+    fi
+
     unset _root
 
-    sh -c "exit $_exit_val"
-    unset _exit_val
-    return $?
+    return $_exit_val
 }
