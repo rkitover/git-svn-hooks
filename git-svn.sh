@@ -1,4 +1,6 @@
 # git-svn-hooks -- a helper for git-svn that allows hooks
+# Note: adding the --force flag to the command
+# causes to skip the execution of the precommit hook.
 #
 # Version: 0.1.0
 #
@@ -76,20 +78,27 @@ git() {
     fi
 
     # Pre hooks
-    if [ -x "$_root/.git/hooks/pre-svn-$1" ]; then
-        if ! "$_root"/.git/hooks/pre-svn-$1; then
-            if [ -n "$_svn_username" ]; then
-                export GIT_SVN_USERNAME="$_svn_username"
-                unset _svn_username
-            fi
-            unset _root
-            return $?
-        fi
-    fi
-
+    _args="${@}"
+	if ! echo "${@}" | grep --quiet '\-\-force'; then
+		if [ -x "$_root/.git/hooks/pre-svn-$1" ]; then
+			if ! "$_root"/.git/hooks/pre-svn-$1; then
+				if [ -n "$_svn_username" ]; then
+					export GIT_SVN_USERNAME="$_svn_username"
+					unset _svn_username
+				fi
+				unset _root
+				return $?
+			fi
+		fi
+	else
+		echo "SKIPPED PRE COMMIT HOOK"
+		_args=$(echo $_args | sed 's/\s*--force\s*//')
+	fi
+	
     # call git-svn
-    command git svn "$@"
+	command git svn "${_args}"
     _exit_val=$?
+    unset $_args
 
     # Post hooks
     if [ -x "$_root/.git/hooks/post-svn-$1" ]; then
