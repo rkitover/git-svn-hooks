@@ -20,8 +20,8 @@ git() {
 
     # otherwise just pass through to git
     if [ -z "$_git_svn" ]; then
-        command git "$@"
         unset _root _git_svn
+        command git "$@"
         return $?
     fi
 
@@ -64,8 +64,8 @@ git() {
     unset _expanded
 
     if [ "$1" != "svn" ]; then
-        command git "$@"
         unset _root
+        command git "$@"
         return $?
     else
         shift;
