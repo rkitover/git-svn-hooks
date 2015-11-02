@@ -77,9 +77,20 @@ git() {
         unset GIT_SVN_USERNAME
     fi
 
+    # Converts remaining args to an array
+    _args=("${@}")
+
+    # Find out if we have a --force arg
+    _force_arg=-1
+    for _index in "${!_args[@]}"; do
+        if [ "${_args[${_index}]}" = '--force' ]; then
+            _force_arg=${_index}
+        fi
+    done
+    unset _index
+
     # Pre hooks
-    _args="${@}"
-	if ! echo "${@}" | grep --quiet '\-\-force'; then
+    if [ "${_force_arg}" -eq -1 ]; then
 		if [ -x "$_root/.git/hooks/pre-svn-$1" ]; then
 			if ! "$_root"/.git/hooks/pre-svn-$1; then
 				if [ -n "$_svn_username" ]; then
@@ -92,13 +103,14 @@ git() {
 		fi
 	else
 		echo "SKIPPED PRE COMMIT HOOK"
-		_args=$(echo $_args | sed 's/\s*--force\s*//')
+        unset _args[${_force_arg}]
 	fi
+	unset _force_arg
 	
     # call git-svn
-	command git svn "${_args}"
+	command git svn "${_args[@]}"
     _exit_val=$?
-    unset $_args
+    unset _args
 
     # Post hooks
     if [ -x "$_root/.git/hooks/post-svn-$1" ]; then
