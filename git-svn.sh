@@ -2,7 +2,7 @@
 # Note: adding the --force flag to the command
 # causes to skip the execution of the precommit hook.
 #
-# Version: 0.1.1
+# Version: 0.1.2
 #
 # Works with all Bourne compatible shells.
 #
@@ -79,7 +79,13 @@ git() {
 
     # Find out if we have a --force arg
     _force=
+    _first=1
     for _arg in "$@"; do
+        if [ -n "$_first" ]; then
+            set --
+            unset _first
+        fi
+
         if [ "$_arg" = --force ]; then
             _force=1
             continue
