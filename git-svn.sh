@@ -2,13 +2,13 @@
 # Note: adding the --force flag to the command
 # causes to skip the execution of the precommit hook.
 #
-# Version: 0.1.0
+# Version: 0.1.1
 #
 # Works with all Bourne compatible shells.
 #
 # Based on: https://raw.github.com/hkjels/.dotfiles/master/zsh/git-svn.zsh
 #
-# Author: rkitover: Rafael Kitover (rkitover@cpan.org)
+# Author: rkitover: Rafael Kitover (rkitover@gmail.com)
 #
 # repo: https://github.com/rkitover/git-svn-hooks
 
@@ -32,7 +32,7 @@ git() {
     export _param_1
 
     _expanded="$( \
-        command git config --get-regexp alias | sed -e 's/^alias\.//' | while read _alias _git_cmd; do \
+        command git config --get-regexp alias | sed -e 's/^alias\.//' | while read -r _alias _git_cmd; do \
             if [ "$_alias" = "$_param_1" ]; then \
                 echo "$_git_cmd"; \
                 break; \
@@ -77,51 +77,50 @@ git() {
         unset GIT_SVN_USERNAME
     fi
 
-    # Converts remaining args to an array
-    _args=("${@}")
-
     # Find out if we have a --force arg
-    _force_arg=-1
-    for _index in "${!_args[@]}"; do
-        if [ "${_args[${_index}]}" = '--force' ]; then
-            _force_arg=${_index}
+    _force=
+    for _arg in "$@"; do
+        if [ "$_arg" = --force ]; then
+            _force=1
+            continue
         fi
+
+        set -- "$@" "$_arg"
     done
-    unset _index
+    unset _arg
 
     # Pre hooks
-    if [ "${_force_arg}" -eq -1 ]; then
-		if [ -x "$_root/.git/hooks/pre-svn-$1" ]; then
-			if ! "$_root"/.git/hooks/pre-svn-$1; then
-				if [ -n "$_svn_username" ]; then
-					export GIT_SVN_USERNAME="$_svn_username"
-					unset _svn_username
-				fi
-				unset _root
-				return $?
-			fi
-		fi
-	else
-		echo "SKIPPED PRE COMMIT HOOK"
-        unset _args[${_force_arg}]
-	fi
-	unset _force_arg
-	
-    # call git-svn
-	command git svn "${_args[@]}"
-    _exit_val=$?
-    unset _args
+    if [ -z "${_force}" ]; then
+        if [ -x "$_root/.git/hooks/pre-svn-$1" ]; then
+            "$_root/.git/hooks/pre-svn-$1"
+            _exit_val=$?
 
-    # Post hooks
-    if [ -x "$_root/.git/hooks/post-svn-$1" ]; then
-        if ! "$_root"/.git/hooks/post-svn-$1; then
             if [ -n "$_svn_username" ]; then
                 export GIT_SVN_USERNAME="$_svn_username"
                 unset _svn_username
             fi
-            unset _root _exit_val
-            return $?
+
+            if [ $_exit_val -ne 0 ]; then
+                unset _root
+                return $_exit_val
+            fi
         fi
+    fi
+
+    # call git-svn
+    command git svn "$@"
+    _exit_val=$?
+
+    # skip post hook for non-zero exit
+    if [ $_exit_val -ne 0 ]; then
+        unset _root
+        return $_exit_val
+    fi
+
+    # Post hooks
+    if [ -x "$_root/.git/hooks/post-svn-$1" ]; then
+        "$_root/.git/hooks/post-svn-$1"
+        _exit_val=$?
     fi
 
     if [ -n "$_svn_username" ]; then
